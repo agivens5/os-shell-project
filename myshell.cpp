@@ -241,6 +241,20 @@ int main() {
             }
         }
 
+        //mv command
+        else if (tokens[0] == "mv") {
+
+
+                    if (tokens.size() != 3) {
+                        cout << "Usage: mv source destination" << endl;
+                    }
+                    else {
+                        if (rename(tokens[1].c_str(), tokens[2].c_str()) != 0) {
+                            cout << "Could not move file/rename file" << endl;
+                        }
+                    }
+                }
+
         // unknown command
         else {
             cout << "Unknown command" << endl;
