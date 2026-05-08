@@ -11,6 +11,8 @@
 #include <cstring>
 #include <limits.h>
 
+extern char **environ;
+
 using namespace std;
 
 // Splits user input into command + arguments
@@ -293,6 +295,18 @@ int main() {
             }
         }
     }
+
+        //environ command
+        else if (tokens[0] == "environ") {
+
+            int i  = 0;
+
+            while (environ[i] != NULL) {
+                cout << environ[i] << endl;
+                i++;
+            }
+        }
+        
         // unknown command
         else {
             cout << "Unknown command" << endl;
