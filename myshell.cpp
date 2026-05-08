@@ -255,6 +255,44 @@ int main() {
                     }
                 }
 
+        //wc command
+        else if (tokens[0] == "wc") {
+            if (tokens.size() != 2) {
+                cout << "Usage: wc file_name" << endl;
+            }
+            else {
+                ifstream file(tokens[1]);
+
+                
+
+                if (!file) {
+                    cout << "File not found: " << tokens[1] << endl;
+                }
+                else {
+                    string word;
+                    string fileLine;
+                    int lines = 0;
+                    int words = 0;
+                    int characters = 0;
+                    while (getline(file, fileLine)) {
+                        lines++;
+                        characters += fileLine.length() + 1;
+
+                        stringstream ss(fileLine);
+                        while (ss >> word) {
+                            words++;
+                        }
+                }
+
+                cout << "Lines: " << lines << endl;
+                cout << "Words: " << words << endl;
+                cout << "Characters: " << characters << endl;
+
+
+                file.close();
+            }
+        }
+    }
         // unknown command
         else {
             cout << "Unknown command" << endl;
