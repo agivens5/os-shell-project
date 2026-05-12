@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <limits.h>
+#include <pwd.h>
+#include <grp.h>
 
 extern char **environ;
 
@@ -284,7 +286,7 @@ int main() {
                         while (ss >> word) {
                             words++;
                         }
-                }
+                    }
 
                 cout << "Lines: " << lines << endl;
                 cout << "Words: " << words << endl;
@@ -296,9 +298,92 @@ int main() {
         }
     }
 
+        // rmdir command
+        else if (tokens[0] == "rmdir") {
+            if (tokens.size() < 2) {
+                cout << "Usage: rmdir directory_name" << endl;
+            } else {
+                for (int i = 1; i < tokens.size(); i++) {
+                    if (rmdir(tokens[i].c_str()) != 0) {
+                        cout << "Could not remove directory: " << tokens[i] << endl;
+                    }
+                }
+            }
+        }
+
+        // dir command
+        else if (tokens[0] == "dir") {
+            string path = ".";
+            if (tokens.size() > 1) path = tokens[1];
+            DIR* directory = opendir(path.c_str());
+            if (directory == NULL) {
+                cout << "Could not open directory" << endl;
+            } else {
+                struct dirent* entry;
+                while ((entry = readdir(directory)) != NULL) {
+                    string name = entry->d_name;
+                    if (name[0] == '.') continue;
+                    string fullPath = path + "/" + name;
+                    struct stat st;
+                    if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
+                        cout << name << "/" << endl;
+                    else
+                        cout << name << endl;
+                }
+                closedir(directory);
+            }
+        }
+
+        // chmod command
+        else if (tokens[0] == "chmod") {
+            if (tokens.size() != 3) {
+                cout << "Usage: chmod permissions file_name" << endl;
+            } else {
+                int mode = stoi(tokens[1], nullptr, 8);
+                if (chmod(tokens[2].c_str(), mode) != 0) {
+                    cout << "Could not change permissions: " << tokens[2] << endl;
+                }
+            }
+        }
+
+        // chown command
+        else if (tokens[0] == "chown") {
+            if (tokens.size() != 3) {
+                cout << "Usage: chown owner file_name" << endl;
+            } else {
+                struct passwd* pw = getpwnam(tokens[1].c_str());
+                if (pw == NULL) {
+                    cout << "User not found: " << tokens[1] << endl;
+                } else {
+                    if (chown(tokens[2].c_str(), pw->pw_uid, -1) != 0) {
+                        cout << "Could not change owner: " << tokens[2] << endl;
+                    }
+                }
+            }
+        }
+
+        // grep command
+        else if (tokens[0] == "grep") {
+            if (tokens.size() != 3) {
+                cout << "Usage: grep pattern file_name" << endl;
+            } else {
+                ifstream file(tokens[2]);
+                if (!file) {
+                    cout << "File not found: " << tokens[2] << endl;
+                } else {
+                    string fileLine;
+                    while (getline(file, fileLine)) {
+                        if (fileLine.find(tokens[1]) != string::npos) {
+                            cout << fileLine << endl;
+                        }
+                    }
+                    file.close();
+                }
+            }
+        }
+
         //environ command
         else if (tokens[0] == "environ") {
-
             int i  = 0;
 
             while (environ[i] != NULL) {
