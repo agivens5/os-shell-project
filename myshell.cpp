@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <limits.h>
 #include <pwd.h>
 #include <grp.h>
@@ -392,6 +393,12 @@ int main() {
             }
         }
         
+        // pause command
+        else if (tokens[0] == "pause") {
+            cout << "Press Enter to continue...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+
         // unknown command
         else {
             cout << "Unknown command" << endl;
